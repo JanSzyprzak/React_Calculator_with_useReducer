@@ -23,16 +23,20 @@ function reducer(state, { type, payload }) {
                 }
 
             }
-            if (payload.digit === "0" && state.currentOperand === "0") {
+            const current = state.currentOperand || ""
+            if (payload.digit === "0" && current === "0") {
                 return state
             }
-            if (payload.digit === "." && state.currentOperand.includes(".")) {
+            if (payload.digit === "." && current.includes(".")) {
+                return state
+            }
+            if (payload.digit === "0" && current[0] !== ".") {
                 return state
             }
 
             return {
                 ...state,
-                currentOperand: `${state.currentOperand || ""}${payload.digit}`,
+                currentOperand: `${current || ""}${payload.digit}`,
             }
 
         case ACTIONS.CHOOSE_OPERATION:
@@ -129,7 +133,11 @@ function evaluate({ currentOperand, previousOperand, operation}) {
 
 function App() {
     const [{ currentOperand, previousOperand, operation }, dispatch] =
-        useReducer(reducer, {});
+        useReducer(reducer, {
+            currentOperand: "0",
+            previousOperand: null,
+            operation: null,
+          });
     return (
         <div className="calculator-grid">
             <div className="output">
